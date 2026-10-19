@@ -6,10 +6,7 @@
 
 **Стек:** Python 3.12 · aiogram 3 · OpenAI-совместимый API (OpenAI, OpenRouter, ProxyAPI, DeepSeek, Ollama) · pydantic-settings · pytest
 
-## Скриншоты
-
-<!-- Сюда — скриншоты или гифка диалога с ботом: docs/demo.gif -->
-_Скоро здесь будет гифка с диалогом._
+<!-- Место под скриншоты или гифку диалога: docs/demo.gif -->
 
 ## Что умеет
 
