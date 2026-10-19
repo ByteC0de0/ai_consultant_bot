@@ -1,0 +1,15 @@
+# Секреты — никогда не коммитим
+.env
+.env.*
+!.env.example
+
+# Виртуальное окружение
+.venv/
+
+# Кэш Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Логи
+*.log

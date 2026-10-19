@@ -1,0 +1,4 @@
+aiogram==3.31.0
+openai==3.35.1
+pydantic-settings==2.16.0
+python-dotenv==1.2.4
