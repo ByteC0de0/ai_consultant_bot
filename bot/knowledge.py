@@ -192,6 +192,13 @@ class KnowledgeBase:
         scored.sort(key=lambda item: (-item[0], item[1]))
         return [self.chunks[index] for _, index in scored[:top_k]]
 
+    def outline(self) -> list[str]:
+        """Оглавление базы: все разделы без повторов. Подставляется в каждый запрос,
+        чтобы на общий вопрос («какой у вас ассортимент?») модель видела, что вообще
+        есть в базе, и не додумывала."""
+        self.refresh()
+        return list(dict.fromkeys(c.title or c.source for c in self.chunks))
+
     def always(self) -> list[Chunk]:
         names = {name.lower() for name in self.always_include}
         return [c for c in self.chunks if c.source.lower() in names]
@@ -204,14 +211,17 @@ class KnowledgeBase:
         self.refresh()
         if top_k == 0:
             return list(self.chunks)
-        result = self.always()
-        limit = top_k + len(result)
+        always = self.always()
+        limit = top_k + len(always)
         candidates = self.search(query, limit)
         if previous:
             candidates += self.search(f"{previous}\n{query}", limit)
+        found: list[Chunk] = []
         for chunk in candidates:
-            if len(result) == limit:
+            if len(found) == top_k:
                 break
-            if chunk not in result:
-                result.append(chunk)
-        return result
+            if chunk not in found and chunk not in always:
+                found.append(chunk)
+        # Найденное — первым: модель внимательнее к началу контекста, и служебные
+        # файлы вроде контактов не перебивают ответ по существу
+        return found + always

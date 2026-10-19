@@ -78,7 +78,8 @@ def test_context_always_contains_manager_contacts(knowledge):
 
 def test_context_limited_to_top_k(knowledge):
     chunks = knowledge.context_for("Сколько стоит кофе, доставка, чай и завтрак?", top_k=2)
-    assert len(chunks) == 3  # контакты + 2 найденных
+    assert len(chunks) == 3  # 2 найденных + контакты
+    assert chunks[-1].source == "contacts.md"
     assert len(set(chunks)) == len(chunks)
 
 
@@ -112,3 +113,15 @@ def test_missing_directory_gives_empty_base(tmp_path):
     kb.refresh()
     assert kb.chunks == []
     assert kb.search("что угодно", top_k=3) == []
+
+
+def test_outline_lists_every_section_once(knowledge):
+    outline = knowledge.outline()
+    assert "Меню и цены / Завтраки (каждый день до 12:00)" in outline
+    assert "Контакты" in outline
+    assert len(outline) == len(set(outline))
+
+
+@pytest.mark.parametrize("question", ["Какой ассортимент в кофейне?", "Что у вас есть из еды?"])
+def test_broad_question_finds_menu_overview(knowledge, question):
+    assert "Меню и цены" in [c.title for c in knowledge.search(question, top_k=5)]

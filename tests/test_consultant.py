@@ -96,3 +96,10 @@ async def test_only_thinking_in_reply_is_error(consultant: Consultant, llm: Fake
     llm.reply = "<think>хм</think>"
     with pytest.raises(LLMError):
         await consultant.answer(1, "Вопрос")
+
+
+@async_test
+async def test_outline_always_in_prompt(consultant: Consultant, llm: FakeLLM):
+    await consultant.answer(1, "Какая погода?")
+    # Даже если поиск ничего не нашёл, модель видит, какие разделы есть в базе
+    assert "• Меню и цены / Авторские напитки" in llm.last_system
